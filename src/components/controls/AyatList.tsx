@@ -45,7 +45,7 @@ export const AyatList: React.FC<AyatListProps> = ({
         return (
           <div
             key={trackUrl}
-            className="block p-2 border-y border-t-0 w-full even:bg-slate-100 last:hidden"
+            className="block p-2 border-y border-t-0 w-full even:bg-slate-100"
           >
             <div className="flex">
               {isActiveTrack && (
