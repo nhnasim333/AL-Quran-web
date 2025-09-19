@@ -1,6 +1,6 @@
 import type { SURAH } from "./types";
 
-export const appName = "AL Quran!!";
+export const appName = "AL Quran";
 export const surahs: SURAH[] = [
   {
     number: 1,
