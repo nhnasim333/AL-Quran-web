@@ -1,9 +1,9 @@
-import axios from 'axios';
-import fs from 'fs';
-import path from 'path';
+// import axios from 'axios';
+// import fs from 'fs';
+// import path from 'path';
 
 // Array of image URLs
-const imageUrls = [
+export const imageUrls = [
   "https://onlinealquranlearning.com/images/15-lines-al-quran/1/1.jpg",
   "https://onlinealquranlearning.com/images/15-lines-al-quran/1/2.jpg",
   "https://onlinealquranlearning.com/images/15-lines-al-quran/1/3.jpg",
@@ -617,47 +617,88 @@ const imageUrls = [
   "https://onlinealquranlearning.com/images/15-lines-al-quran/30/611.jpg",
 ];
 
-// Folder to save downloaded images
-const dirname = path.dirname(new URL(import.meta.url).pathname);
-const downloadFolder = path.join(dirname, 'images');
-
-// Create the folder if it doesn't exist
-if (!fs.existsSync(downloadFolder)) {
-    fs.mkdirSync(downloadFolder);
+// Helper function to extract para and page from the URL
+export interface QuranPage {
+  page: number;
+  image: string;
 }
 
-// Function to download an image
-const downloadImage = async (url, filename) => {
-    try {
-        const response = await axios({
-            url,
-            method: 'GET',
-            responseType: 'stream',
-        });
+export interface QuranPara {
+  para: number;
+  pages: QuranPage[];
+}
 
-        const filepath = path.join(downloadFolder, filename);
+export const quran: QuranPara[] = [];
 
-        return new Promise((resolve, reject) => {
-            const writer = fs.createWriteStream(filepath);
-            response.data.pipe(writer);
-            writer.on('finish', resolve);
-            writer.on('error', reject);
-        });
-    } catch (error) {
-        console.error(`Failed to download ${url}:`, error.message);
-    }
-};
+function extractParaPage(url: string): QuranPage & { para: number } | null {
+  const match = url.match(/15-lines-al-quran\/(\d+)\/(\d+)\.jpg$/);
+  if (!match) return null;
+  return {
+    para: Number(match[1]),
+    page: Number(match[2]),
+    image: url
+  };
+}
 
-// Main function to download all images
-const downloadAllImages = async () => {
-    for (const url of imageUrls) {
-        const filename = path.basename(new URL(url).pathname);
-        console.log(`Downloading ${url} as ${filename}...`);
-        await downloadImage(url, filename);
-    }
+// imageUrls: string[] should be defined above this
+imageUrls.forEach(url => {
+  const entry = extractParaPage(url);
+  if (!entry) return;
+  let paraObj = quran.find(q => q.para === entry.para);
+  if (!paraObj) {
+    paraObj = { para: entry.para, pages: [] };
+    quran.push(paraObj);
+  }
+  paraObj.pages.push({ page: entry.page, image: entry.image });
+});
 
-    console.log('All images downloaded successfully!');
-};
+// Optional: Sort pages within each para (if needed)
+quran.forEach(paraObj => paraObj.pages.sort((a, b) => a.page - b.page));
 
-// Run the main function
-downloadAllImages();
+// Example: Display the full quran object
+console.log(JSON.stringify(quran, null, 2));
+
+// // Folder to save downloaded images
+// const dirname = path.dirname(new URL(import.meta.url).pathname);
+// const downloadFolder = path.join(dirname, 'images');
+
+// // Create the folder if it doesn't exist
+// if (!fs.existsSync(downloadFolder)) {
+//     fs.mkdirSync(downloadFolder);
+// }
+
+// // Function to download an image
+// const downloadImage = async (url, filename) => {
+//     try {
+//         const response = await axios({
+//             url,
+//             method: 'GET',
+//             responseType: 'stream',
+//         });
+
+//         const filepath = path.join(downloadFolder, filename);
+
+//         return new Promise((resolve, reject) => {
+//             const writer = fs.createWriteStream(filepath);
+//             response.data.pipe(writer);
+//             writer.on('finish', resolve);
+//             writer.on('error', reject);
+//         });
+//     } catch (error) {
+//         console.error(`Failed to download ${url}:`, error.message);
+//     }
+// };
+
+// // Main function to download all images
+// const downloadAllImages = async () => {
+//     for (const url of imageUrls) {
+//         const filename = path.basename(new URL(url).pathname);
+//         console.log(`Downloading ${url} as ${filename}...`);
+//         await downloadImage(url, filename);
+//     }
+
+//     console.log('All images downloaded successfully!');
+// };
+
+// // Run the main function
+// downloadAllImages();
