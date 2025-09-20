@@ -279,7 +279,7 @@ const QuranApp = () => {
 
   const [startingAyatNumber, _] = ayatRange;
   const [activeTab, setActiveTab] = useState<"listen" | "read">("listen");
-  const [readOption, setReadOption] = useState<"para" | "page">("para");
+  const [readOption, setReadOption] = useState<"para" | "page" | null>(null);
 
   const TabButton = ({
     tab,
