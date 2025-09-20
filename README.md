@@ -5,6 +5,7 @@ A Progressive Web App (PWA) for Quran memorization practice, built with React, V
 ## Features
 
 - 🎵 Audio playback of Quranic verses with multiple Qaris
+- 📜 Added 15 line per page Quran pages.
 - 🔄 Repeat functionality for memorization practice
 - 📱 PWA support for offline usage
 - 💾 Local storage for user preferences
@@ -23,24 +24,17 @@ A Progressive Web App (PWA) for Quran memorization practice, built with React, V
 - [ ] FIX: Click on 'Play' does not Play and have to click 'play' button on player to play
   - Could not replicate. Maybe the problem is in Brave only
 
-Additional Features
-
-- [ ] Add all 15 page quran pages.
-- [ ] Make a playlist feature
-- [ ] User account
-- [ ] Save preferences in user account
-
 ## 🚀 Development
 
 All commands are run from the root of the project, from a terminal:
 
-| Command       | Action                                      |
-| :------------ | :------------------------------------------ |
-| `pnpm install`| Installs dependencies                       |
-| `pnpm dev`    | Starts local dev server at `localhost:5173`|
-| `pnpm build`  | Build your production site to `./dist/`    |
-| `pnpm preview`| Preview your build locally, before deploying |
-| `pnpm lint`   | Run ESLint to check code quality           |
+| Command           | Action                                       |
+| :---------------- | :------------------------------------------- |
+| `npm run install` | Installs dependencies                        |
+| `npm run dev`     | Starts local dev server at `localhost:5173`  |
+| `npm run build`   | Build your production site to `./dist/`      |
+| `npm run preview` | Preview your build locally, before deploying |
+| `npm run lint`    | Run ESLint to check code quality             |
 
 ## Tech Stack
 
