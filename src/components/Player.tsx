@@ -315,74 +315,86 @@ const QuranApp = () => {
           <TabButton tab="read" icon={<BiBookOpen size={18} />} label="Read" />
         </div>
       </div>
-      <div className="p-4 flex-grow overflow-hidden flex gap-2 flex-col ">
-        <PlayControls
-          qariKey={qariKey}
-          setQariKey={setQariKey}
-          ayatRange={ayatRange}
-          setAyatRange={setAyatRange}
-          surah={surah}
-          surahNumber={surahNumber}
-          setSurahNumber={setSurahNumber}
-        />
-        <div className="flex items-center justify-between">
-          <label className="flex items-center gap-2" htmlFor="shouldRepeat">
-            <input
-              type="checkbox"
-              name="shouldRepeat"
-              id="shouldRepeat"
-              checked={shouldRepeat}
-              onChange={() => setShouldRepeat(!shouldRepeat)}
-              className="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500"
+      {activeTab === "listen" ? (
+        <>
+          <div className="p-4 flex-grow overflow-hidden flex gap-2 flex-col ">
+            <PlayControls
+              qariKey={qariKey}
+              setQariKey={setQariKey}
+              ayatRange={ayatRange}
+              setAyatRange={setAyatRange}
+              surah={surah}
+              surahNumber={surahNumber}
+              setSurahNumber={setSurahNumber}
             />
-            <span className="text-sm font-medium text-gray-700">Repeat</span>
-          </label>
-          <div className="text-sm text-gray-600">
-            Current ayat #{activeAyatNumber}
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-2" htmlFor="shouldRepeat">
+                <input
+                  type="checkbox"
+                  name="shouldRepeat"
+                  id="shouldRepeat"
+                  checked={shouldRepeat}
+                  onChange={() => setShouldRepeat(!shouldRepeat)}
+                  className="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500"
+                />
+                <span className="text-sm font-medium text-gray-700">
+                  Repeat
+                </span>
+              </label>
+              <div className="text-sm text-gray-600">
+                Current ayat #{activeAyatNumber}
+              </div>
+            </div>
+            <AyatList
+              tracksToPlay={tracksToPlay}
+              activeTrackUrl={activeTrackUrl}
+              activeAyatNumber={activeAyatNumber}
+              setIsPlaying={setIsPlaying}
+              handleAyatClick={handleAyatClick}
+              isPlaying={isPlaying}
+              audioPlayerRef={audioPlayerRef}
+              handleEnded={handleEnded}
+            />
           </div>
-        </div>
-        <AyatList
-          tracksToPlay={tracksToPlay}
-          activeTrackUrl={activeTrackUrl}
-          activeAyatNumber={activeAyatNumber}
-          setIsPlaying={setIsPlaying}
-          handleAyatClick={handleAyatClick}
-          isPlaying={isPlaying}
-          audioPlayerRef={audioPlayerRef}
-          handleEnded={handleEnded}
-        />
-      </div>
-      {activeTab === "listen" && (
-        <div className="p-4 bg-white border-t shadow-lg">
-          <div className="flex gap-2">
-            {!isPlaying ? (
-              <button
-                className="flex-1 flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200"
-                onClick={() => handlePlay({ activeTrackUrl: activeTrackUrl })}
-              >
-                <BiPlay size={20} />
-                Play
-              </button>
-            ) : (
-              <button
-                className="flex-1 flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200"
-                onClick={handlePause}
-              >
-                <BiPause size={20} />
-                Pause
-              </button>
-            )}
+          {activeTab === "listen" && (
+            <div className="p-4 bg-white border-t shadow-lg">
+              <div className="flex gap-2">
+                {!isPlaying ? (
+                  <button
+                    className="flex-1 flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200"
+                    onClick={() =>
+                      handlePlay({ activeTrackUrl: activeTrackUrl })
+                    }
+                  >
+                    <BiPlay size={20} />
+                    Play
+                  </button>
+                ) : (
+                  <button
+                    className="flex-1 flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200"
+                    onClick={handlePause}
+                  >
+                    <BiPause size={20} />
+                    Pause
+                  </button>
+                )}
 
-            {activeAyatNumber > startingAyatNumber && (
-              <button
-                className="flex items-center justify-center gap-2 bg-gray-500 hover:bg-gray-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200"
-                onClick={handleReset}
-              >
-                <FiRotateCcw size={18} />
-                Restart
-              </button>
-            )}
-          </div>
+                {activeAyatNumber > startingAyatNumber && (
+                  <button
+                    className="flex items-center justify-center gap-2 bg-gray-500 hover:bg-gray-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200"
+                    onClick={handleReset}
+                  >
+                    <FiRotateCcw size={18} />
+                    Restart
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+        </>
+      ) : (
+        <div className="p-4 flex-grow overflow-y-auto">
+          <h2 className="text-2xl font-bold mb-4 text-center">Read</h2>
         </div>
       )}
     </div>
