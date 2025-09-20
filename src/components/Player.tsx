@@ -18,9 +18,11 @@ import { defaultQariKey, type QariKey } from "./controls/qari";
 import Header from "./Header";
 import { getActiveAyatNumber, getTracksToPlay } from "./utils";
 import { BsHeadphones } from "react-icons/bs";
-import { BiBookOpen, BiPause, BiPlay } from "react-icons/bi";
+import { BiBookOpen, BiPause, BiPlay, BiSearch } from "react-icons/bi";
 import PlayIcon from "./icons/PlayIcon";
-import { FiRotateCcw } from "react-icons/fi";
+import { FiRotateCcw, FiList, FiBookOpen } from "react-icons/fi";
+import ParaList from "./readQuran/ParaList";
+import GoToPage from "./readQuran/GoToPage";
 
 const QuranApp = () => {
   const audioPlayerRef = useRef<{
@@ -265,7 +267,7 @@ const QuranApp = () => {
 
   // Initialize audio session manager on mount
   useEffect(() => {
-    // Initialize audio session manager for background playback
+    // Initialize audio session manager for background playbook
     audioSessionManager.current.initialize();
     audioSessionManager.current.setupBackgroundAudioHandlers();
 
@@ -277,6 +279,7 @@ const QuranApp = () => {
 
   const [startingAyatNumber, _] = ayatRange;
   const [activeTab, setActiveTab] = useState<"listen" | "read">("listen");
+  const [readOption, setReadOption] = useState<"para" | "page">("para");
 
   const TabButton = ({
     tab,
@@ -300,11 +303,47 @@ const QuranApp = () => {
     </button>
   );
 
+  const ReadOptionButton = ({
+    option,
+    icon,
+    label,
+    description,
+  }: {
+    option: "para" | "page";
+    icon: React.ReactNode;
+    label: string;
+    description: string;
+  }) => (
+    <button
+      onClick={() => setReadOption(option)}
+      className={`w-full p-4 rounded-lg border-2 transition-all duration-200 ${
+        readOption === option
+          ? "border-emerald-500 bg-emerald-50 text-emerald-700"
+          : "border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50"
+      }`}
+    >
+      <div className="flex items-center gap-3">
+        <div
+          className={`text-2xl ${
+            readOption === option ? "text-emerald-500" : "text-gray-400"
+          }`}
+        >
+          {icon}
+        </div>
+        <div className="text-left">
+          <h3 className="font-semibold text-lg">{label}</h3>
+          <p className="text-sm opacity-75">{description}</p>
+        </div>
+      </div>
+    </button>
+  );
+
   return (
     <div className="flex h-screen mx-auto w-full max-w-md flex-col bg-white">
       <div className="bg-emerald-500 text-white p-4 shadow-lg">
         <h1 className="text-xl font-bold text-center">{appName}</h1>
       </div>
+
       <div className="p-4 bg-gray-50 border-b">
         <div className="flex gap-2">
           <TabButton
@@ -315,6 +354,7 @@ const QuranApp = () => {
           <TabButton tab="read" icon={<BiBookOpen size={18} />} label="Read" />
         </div>
       </div>
+
       {activeTab === "listen" ? (
         <>
           <div className="p-4 flex-grow overflow-hidden flex gap-2 flex-col ">
@@ -356,45 +396,65 @@ const QuranApp = () => {
               handleEnded={handleEnded}
             />
           </div>
-          {activeTab === "listen" && (
-            <div className="p-4 bg-white border-t shadow-lg">
-              <div className="flex gap-2">
-                {!isPlaying ? (
-                  <button
-                    className="flex-1 flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200"
-                    onClick={() =>
-                      handlePlay({ activeTrackUrl: activeTrackUrl })
-                    }
-                  >
-                    <BiPlay size={20} />
-                    Play
-                  </button>
-                ) : (
-                  <button
-                    className="flex-1 flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200"
-                    onClick={handlePause}
-                  >
-                    <BiPause size={20} />
-                    Pause
-                  </button>
-                )}
+          <div className="p-4 bg-white border-t shadow-lg">
+            <div className="flex gap-2">
+              {!isPlaying ? (
+                <button
+                  className="flex-1 flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200"
+                  onClick={() => handlePlay({ activeTrackUrl: activeTrackUrl })}
+                >
+                  <BiPlay size={20} />
+                  Play
+                </button>
+              ) : (
+                <button
+                  className="flex-1 flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200"
+                  onClick={handlePause}
+                >
+                  <BiPause size={20} />
+                  Pause
+                </button>
+              )}
 
-                {activeAyatNumber > startingAyatNumber && (
-                  <button
-                    className="flex items-center justify-center gap-2 bg-gray-500 hover:bg-gray-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200"
-                    onClick={handleReset}
-                  >
-                    <FiRotateCcw size={18} />
-                    Restart
-                  </button>
-                )}
-              </div>
+              {activeAyatNumber > startingAyatNumber && (
+                <button
+                  className="flex items-center justify-center gap-2 bg-gray-500 hover:bg-gray-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200"
+                  onClick={handleReset}
+                >
+                  <FiRotateCcw size={18} />
+                  Restart
+                </button>
+              )}
             </div>
-          )}
+          </div>
         </>
       ) : (
-        <div className="p-4 flex-grow overflow-y-auto">
-          <h2 className="text-2xl font-bold mb-4 text-center">Read</h2>
+        <div className="flex-1 flex flex-col">
+          {readOption === null ? (
+            <div className="p-4 flex-1">
+              <h2 className="text-xl font-bold mb-6 text-center text-gray-800">
+                Choose Reading Option
+              </h2>
+              <div className="space-y-4">
+                <ReadOptionButton
+                  option="para"
+                  icon={<FiList />}
+                  label="Para List"
+                  description="Browse all 30 paras of the Quran"
+                />
+                <ReadOptionButton
+                  option="page"
+                  icon={<FiBookOpen />}
+                  label="Go to Page"
+                  description="Navigate directly to a specific page"
+                />
+              </div>
+            </div>
+          ) : readOption === "para" ? (
+            <ParaList onBack={() => setReadOption(null)} />
+          ) : (
+            <GoToPage onBack={() => setReadOption(null)} />
+          )}
         </div>
       )}
     </div>
