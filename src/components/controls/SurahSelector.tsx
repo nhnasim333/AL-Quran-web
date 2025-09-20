@@ -5,37 +5,37 @@ interface SurahSelectorProps {
   setAyatRange: React.Dispatch<React.SetStateAction<[number, number]>>;
 }
 
-export const SurahSelector: React.FC<SurahSelectorProps> = ({
+const SurahSelector: React.FC<SurahSelectorProps> = ({
   surahNumber,
   setSurahNumber,
   setAyatRange,
-}) => {
-  return (
-    <>
-      <div>
-        <label htmlFor="surah">Surah</label>
-        <select
-          className="border-2 rounded p-2 w-full"
-          name="surah"
-          id="surah"
-          value={surahNumber}
-          size={1}
-          onChange={(e) => {
-            const surahNumber = parseInt(e.target.value);
-            setSurahNumber(surahNumber);
-            const surah = surahs[surahNumber - 1];
-            setAyatRange([1, surah.numberOfAyats]);
-          }}
-        >
-          {surahs.map(({ number, name, nameEnglish }) => (
-            <option key={name} value={number}>
-              {number}. {name}: {nameEnglish}
-            </option>
-          ))}
-        </select>
-      </div>
-    </>
-  );
-};
+}) => (
+  <div>
+    <label
+      className="block text-sm font-medium text-gray-700 mb-1"
+      htmlFor="surah"
+    >
+      Surah
+    </label>
+    <select
+      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white"
+      name="surah"
+      id="surah"
+      value={surahNumber}
+      onChange={(e) => {
+        const newSurahNumber = parseInt(e.target.value);
+        setSurahNumber(newSurahNumber);
+        const selectedSurah = surahs[newSurahNumber - 1];
+        setAyatRange([1, selectedSurah.numberOfAyats]);
+      }}
+    >
+      {surahs.map(({ number, name, nameEnglish }) => (
+        <option key={number} value={number}>
+          {number}. {name} ({nameEnglish})
+        </option>
+      ))}
+    </select>
+  </div>
+);
 
 export default SurahSelector;

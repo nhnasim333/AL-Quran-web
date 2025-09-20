@@ -6,7 +6,7 @@ interface AyatRangeSelectorProps {
   surah: SURAH;
 }
 
-export const AyatRangeSelector: React.FC<AyatRangeSelectorProps> = ({
+const AyatRangeSelector: React.FC<AyatRangeSelectorProps> = ({
   ayatRange,
   setAyatRange,
   surah,
@@ -14,14 +14,15 @@ export const AyatRangeSelector: React.FC<AyatRangeSelectorProps> = ({
   const [startingAyatNumber, endingAyatNumber] = ayatRange;
 
   return (
-    <>
-      <div className="flex gap-2">
-        <div className="flex gap-2 items-center">
-          <label htmlFor="startingAyatNumber">Starting</label>
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-1">
+        Ayat Range
+      </label>
+      <div className="flex items-center gap-2">
+        <div className="flex-1">
+          <label className="block text-xs text-gray-500 mb-1">From</label>
           <select
-            className="border-2 rounded p-2"
-            name="startingAyatNumber"
-            id="startingAyatNumber"
+            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white"
             value={startingAyatNumber}
             onChange={(e) => {
               const selectedStartingAyatNumber = parseInt(e.target.value);
@@ -42,12 +43,10 @@ export const AyatRangeSelector: React.FC<AyatRangeSelectorProps> = ({
             ))}
           </select>
         </div>
-        <div className="flex gap-2 items-center">
-          <label htmlFor="endingAyatNumber">Ending</label>
+        <div className="flex-1">
+          <label className="block text-xs text-gray-500 mb-1">To</label>
           <select
-            className="border-2 rounded p-2"
-            name="endingAyatNumber"
-            id="endingAyatNumber"
+            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white"
             value={endingAyatNumber}
             onChange={(e) => {
               const selectedEndingAyatNumber = parseInt(e.target.value);
@@ -74,7 +73,7 @@ export const AyatRangeSelector: React.FC<AyatRangeSelectorProps> = ({
           </select>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

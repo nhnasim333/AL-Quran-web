@@ -5,31 +5,28 @@ interface QariSelectorProps {
   setQariKey: React.Dispatch<React.SetStateAction<QariKey>>;
 }
 
-export const QariSelector: React.FC<QariSelectorProps> = ({
-  qariKey,
-  setQariKey
-}) => {
-  return (
-    <>
-      <div>
-        <label htmlFor="qari">Qari</label>
-        <select
-          className="border-2 rounded p-2 w-full"
-          name="qari"
-          id="qari"
-          value={qariKey}
-          size={1}
-          onChange={(e) => setQariKey(e.target.value as QariKey)}
-        >
-          {Object.keys(qaris).map((qariKey) => (
-            <option key={qariKey} value={qariKey}>
-              {qaris[qariKey as QariKey].name}
-            </option>
-          ))}
-        </select>
-      </div>
-    </>
-  );
-};
+const QariSelector: React.FC<QariSelectorProps> = ({ qariKey, setQariKey }) => (
+  <div>
+    <label
+      className="block text-sm font-medium text-gray-700 mb-1"
+      htmlFor="qari"
+    >
+      Qari (Reciter)
+    </label>
+    <select
+      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white"
+      name="qari"
+      id="qari"
+      value={qariKey}
+      onChange={(e) => setQariKey(e.target.value as QariKey)}
+    >
+      {Object.entries(qaris).map(([key, qari]) => (
+        <option key={key} value={key}>
+          {qari.name}
+        </option>
+      ))}
+    </select>
+  </div>
+);
 
 export default QariSelector;
