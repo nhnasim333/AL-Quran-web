@@ -17,6 +17,10 @@ import PlayControls from "./controls/PlayControls";
 import { defaultQariKey, type QariKey } from "./controls/qari";
 import Header from "./Header";
 import { getActiveAyatNumber, getTracksToPlay } from "./utils";
+import { BsHeadphones } from "react-icons/bs";
+import { BiBookOpen, BiPause, BiPlay } from "react-icons/bi";
+import PlayIcon from "./icons/PlayIcon";
+import { FiRotateCcw } from "react-icons/fi";
 
 const QuranApp = () => {
   const audioPlayerRef = useRef<{
@@ -272,10 +276,45 @@ const QuranApp = () => {
   }, []);
 
   const [startingAyatNumber, _] = ayatRange;
+  const [activeTab, setActiveTab] = useState<"listen" | "read">("listen");
+
+  const TabButton = ({
+    tab,
+    icon,
+    label,
+  }: {
+    tab: "listen" | "read";
+    icon: React.ReactNode;
+    label: string;
+  }) => (
+    <button
+      onClick={() => setActiveTab(tab)}
+      className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-medium transition-all duration-200 ${
+        activeTab === tab
+          ? "bg-emerald-500 text-white shadow-lg"
+          : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+      }`}
+    >
+      {icon}
+      {label}
+    </button>
+  );
 
   return (
     <div className="flex h-screen mx-auto w-full max-w-md flex-col bg-white">
-      <Header appName={appName} />
+      <div className="bg-emerald-500 text-white p-4 shadow-lg">
+        <h1 className="text-xl font-bold text-center">{appName}</h1>
+      </div>
+      <div className="p-4 bg-gray-50 border-b">
+        <div className="flex gap-2">
+          <TabButton
+            tab="listen"
+            icon={<BsHeadphones size={18} />}
+            label="Listen"
+          />
+          <TabButton tab="read" icon={<BiBookOpen size={18} />} label="Read" />
+        </div>
+      </div>
       <div className="p-4 flex-grow overflow-hidden flex gap-2 flex-col ">
         <PlayControls
           qariKey={qariKey}
@@ -286,6 +325,22 @@ const QuranApp = () => {
           surahNumber={surahNumber}
           setSurahNumber={setSurahNumber}
         />
+        <div className="flex items-center justify-between">
+          <label className="flex items-center gap-2" htmlFor="shouldRepeat">
+            <input
+              type="checkbox"
+              name="shouldRepeat"
+              id="shouldRepeat"
+              checked={shouldRepeat}
+              onChange={() => setShouldRepeat(!shouldRepeat)}
+              className="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500"
+            />
+            <span className="text-sm font-medium text-gray-700">Repeat</span>
+          </label>
+          <div className="text-sm text-gray-600">
+            Current ayat #{activeAyatNumber}
+          </div>
+        </div>
         <AyatList
           tracksToPlay={tracksToPlay}
           activeTrackUrl={activeTrackUrl}
@@ -296,46 +351,40 @@ const QuranApp = () => {
           audioPlayerRef={audioPlayerRef}
           handleEnded={handleEnded}
         />
-        <div className="flex gap-3 justify-between">
-          <label className="flex gap-2" htmlFor="shouldRepeat">
-            <input
-              type="checkbox"
-              name="shouldRepeat"
-              id="shouldRepeat"
-              checked={shouldRepeat}
-              onChange={() => setShouldRepeat(!shouldRepeat)}
-            />
-            Repeat
-          </label>
-          <div>Current ayat #{activeAyatNumber}</div>
+      </div>
+      {activeTab === "listen" && (
+        <div className="p-4 bg-white border-t shadow-lg">
+          <div className="flex gap-2">
+            {!isPlaying ? (
+              <button
+                className="flex-1 flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200"
+                onClick={() => handlePlay({ activeTrackUrl: activeTrackUrl })}
+              >
+                <BiPlay size={20} />
+                Play
+              </button>
+            ) : (
+              <button
+                className="flex-1 flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200"
+                onClick={handlePause}
+              >
+                <BiPause size={20} />
+                Pause
+              </button>
+            )}
+
+            {activeAyatNumber > startingAyatNumber && (
+              <button
+                className="flex items-center justify-center gap-2 bg-gray-500 hover:bg-gray-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200"
+                onClick={handleReset}
+              >
+                <FiRotateCcw size={18} />
+                Restart
+              </button>
+            )}
+          </div>
         </div>
-      </div>
-      <div className="inline-flex shadow-sm" role="group">
-        {!isPlaying && (
-          <button
-            className="btn bg-primary font-bold text-xl text-white w-full p-3"
-            onClick={() => handlePlay({ activeTrackUrl: activeTrackUrl })}
-          >
-            Play
-          </button>
-        )}
-        {isPlaying && (
-          <button
-            className="btn bg-primary font-bold text-xl text-white w-full p-3"
-            onClick={handlePause}
-          >
-            Pause
-          </button>
-        )}
-        {activeAyatNumber > startingAyatNumber && (
-          <button
-            className="btn bg-secondary font-bold text-xl text-white p-3"
-            onClick={handleReset}
-          >
-            Restart
-          </button>
-        )}
-      </div>
+      )}
     </div>
   );
 };
