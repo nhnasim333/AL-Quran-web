@@ -8,39 +8,73 @@ import {
 } from "react-icons/fi";
 import { quran } from "../../../_scripts/downloadImages";
 
-const QuranPageReader = ({ selectedPara, setSelectedPara, onBack }: any) => {
-  const [isReading, setIsReading] = useState(false);
-  const [currentPageIndex, setCurrentPageIndex] = useState(0);
-  const [currentQuranItem, setCurrentQuranItem] = useState(null);
-  const [imageLoadError, setImageLoadError] = useState(false);
-  const [touchStart, setTouchStart] = useState(null);
-  const [touchEnd, setTouchEnd] = useState(null);
+// Type definitions
+interface Para {
+  number: number;
+  name: string;
+  arabicName: string;
+  startingSurah: string;
+  endingSurah: string;
+  totalPages: number;
+}
+
+interface Page {
+  page: number;
+  image: string;
+}
+
+interface QuranItem {
+  para: number;
+  pages: Page[];
+}
+
+interface QuranPageReaderProps {
+  selectedPara: Para | null;
+  setSelectedPara: (para: Para | null) => void;
+  onBack: () => void;
+}
+
+const QuranPageReader: React.FC<QuranPageReaderProps> = ({
+  selectedPara,
+  setSelectedPara,
+  onBack,
+}) => {
+  const [isReading, setIsReading] = useState<boolean>(false);
+  const [currentPageIndex, setCurrentPageIndex] = useState<number>(0);
+  const [currentQuranItem, setCurrentQuranItem] = useState<QuranItem | null>(
+    null
+  );
+  const [imageLoadError, setImageLoadError] = useState<boolean>(false);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
   const minSwipeDistance = 50;
 
-  const handleParaClick = (para: any) => {
-    const quranItem: any = quran.filter((item) => item.para === para.number)[0];
+  const handleParaClick = (para: Para): void => {
+    const quranItem = quran.filter(
+      (item: QuranItem) => item.para === para.number
+    )[0];
     setCurrentQuranItem(quranItem);
     setCurrentPageIndex(0);
     setIsReading(true);
     setImageLoadError(false);
   };
 
-  const handleBackToParaInfo = () => {
+  const handleBackToParaInfo = (): void => {
     setIsReading(false);
     setCurrentQuranItem(null);
     setCurrentPageIndex(0);
     setImageLoadError(false);
   };
 
-  const handleBackToParaList = () => {
+  const handleBackToParaList = (): void => {
     setSelectedPara(null);
     setIsReading(false);
     setCurrentQuranItem(null);
     setCurrentPageIndex(0);
   };
 
-  const goToNextPage = () => {
+  const goToNextPage = (): void => {
     if (
       currentQuranItem &&
       currentPageIndex < currentQuranItem.pages.length - 1
@@ -50,23 +84,23 @@ const QuranPageReader = ({ selectedPara, setSelectedPara, onBack }: any) => {
     }
   };
 
-  const goToPreviousPage = () => {
+  const goToPreviousPage = (): void => {
     if (currentPageIndex > 0) {
       setCurrentPageIndex(currentPageIndex - 1);
       setImageLoadError(false);
     }
   };
 
-  const onTouchStart = (e) => {
+  const onTouchStart = (e: React.TouchEvent<HTMLDivElement>): void => {
     setTouchEnd(null);
     setTouchStart(e.targetTouches[0].clientX);
   };
 
-  const onTouchMove = (e) => {
+  const onTouchMove = (e: React.TouchEvent<HTMLDivElement>): void => {
     setTouchEnd(e.targetTouches[0].clientX);
   };
 
-  const onTouchEnd = () => {
+  const onTouchEnd = (): void => {
     if (!touchStart || !touchEnd) return;
 
     const distance = touchStart - touchEnd;
@@ -82,7 +116,7 @@ const QuranPageReader = ({ selectedPara, setSelectedPara, onBack }: any) => {
 
   // Handle keyboard navigation
   useEffect(() => {
-    const handleKeyPress = (e) => {
+    const handleKeyPress = (e: KeyboardEvent): void => {
       if (!isReading) return;
 
       if (e.key === "ArrowRight" || e.key === "ArrowDown") {
@@ -98,7 +132,7 @@ const QuranPageReader = ({ selectedPara, setSelectedPara, onBack }: any) => {
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [isReading, currentPageIndex, currentQuranItem]);
 
-  const handleImageError = () => {
+  const handleImageError = (): void => {
     setImageLoadError(true);
   };
 
@@ -139,7 +173,7 @@ const QuranPageReader = ({ selectedPara, setSelectedPara, onBack }: any) => {
         </div>
 
         {/* Page Content */}
-        <div className="flex-1 flex items-center justify-center bg-gray-100 relative">
+        <div className="flex-1 flex items-center justify-center bg-gray-50 relative">
           <div
             className="relative max-w-2xl w-full h-full flex items-center justify-center px-4"
             onTouchStart={onTouchStart}
