@@ -661,8 +661,6 @@ quran.forEach(paraObj => {
   paraObj.pages.forEach((p, i) => p.paraPage = i + 1);
 });
 
-// Example: Display the full quran object
-console.log(JSON.stringify(quran, null, 2));
 
 // // Folder to save downloaded images
 // const dirname = path.dirname(new URL(import.meta.url).pathname);
