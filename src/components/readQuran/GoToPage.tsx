@@ -206,7 +206,7 @@ const GoToPage: React.FC<GoToPageProps> = ({ onBack }) => {
           </button>
           <div>
             <h2 className="text-lg font-bold">Go to Page</h2>
-            <p className="text-sm opacity-90">Navigate to any page (1-604)</p>
+            <p className="text-sm opacity-90">Navigate to any page (1-611)</p>
           </div>
         </div>
       </div>
