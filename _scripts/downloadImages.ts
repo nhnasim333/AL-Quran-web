@@ -2,6 +2,8 @@
 // import fs from 'fs';
 // import path from 'path';
 
+
+
 // Array of image URLs
 export const imageUrls = [
   "https://onlinealquranlearning.com/images/15-lines-al-quran/1/1.jpg",
@@ -617,9 +619,9 @@ export const imageUrls = [
   "https://onlinealquranlearning.com/images/15-lines-al-quran/30/611.jpg",
 ];
 
-// Helper function to extract para and page from the URL
 export interface QuranPage {
-  page: number;
+  paraPage: number; // index within this para, starting at 1
+  page: number;     // global page number
   image: string;
 }
 
@@ -630,7 +632,7 @@ export interface QuranPara {
 
 export const quran: QuranPara[] = [];
 
-function extractParaPage(url: string): QuranPage & { para: number } | null {
+function extractParaPage(url: string): { para: number; page: number; image: string } | null {
   const match = url.match(/15-lines-al-quran\/(\d+)\/(\d+)\.jpg$/);
   if (!match) return null;
   return {
@@ -640,7 +642,7 @@ function extractParaPage(url: string): QuranPage & { para: number } | null {
   };
 }
 
-// imageUrls: string[] should be defined above this
+// Build the structure
 imageUrls.forEach(url => {
   const entry = extractParaPage(url);
   if (!entry) return;
@@ -649,11 +651,15 @@ imageUrls.forEach(url => {
     paraObj = { para: entry.para, pages: [] };
     quran.push(paraObj);
   }
-  paraObj.pages.push({ page: entry.page, image: entry.image });
+  paraObj.pages.push({ paraPage: 0, page: entry.page, image: entry.image }); // Fill paraPage later
 });
 
-// Optional: Sort pages within each para (if needed)
-quran.forEach(paraObj => paraObj.pages.sort((a, b) => a.page - b.page));
+// Sort pages within each para
+quran.forEach(paraObj => {
+  paraObj.pages.sort((a, b) => a.page - b.page);
+  // Assign paraPage (1-based index)
+  paraObj.pages.forEach((p, i) => p.paraPage = i + 1);
+});
 
 // Example: Display the full quran object
 console.log(JSON.stringify(quran, null, 2));

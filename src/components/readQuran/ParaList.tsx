@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { FiArrowLeft, FiBookOpen, FiSearch } from "react-icons/fi";
 import { BiSearch } from "react-icons/bi";
+import QuranPageReader from "./QuranPageRender";
 
 interface Para {
   number: number;
@@ -261,6 +262,7 @@ interface ParaListProps {
 const ParaList: React.FC<ParaListProps> = ({ onBack }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedPara, setSelectedPara] = useState<Para | null>(null);
+  const [startReading, setStartReading] = useState(false);
 
   const filteredParas = paras.filter(
     (para) =>
@@ -271,10 +273,17 @@ const ParaList: React.FC<ParaListProps> = ({ onBack }) => {
 
   const handleParaClick = (para: Para) => {
     setSelectedPara(para);
-    // Here you would navigate to the specific para reading view
-    console.log(`Navigate to Para ${para.number}: ${para.name}`);
   };
 
+  if (startReading && selectedPara) {
+    return (
+      <QuranPageReader
+        selectedPara={selectedPara}
+        setSelectedPara={setSelectedPara}
+        onBack={onBack}
+      />
+    );
+  }
   if (selectedPara) {
     return (
       <div className="flex-1 flex flex-col">
@@ -324,7 +333,7 @@ const ParaList: React.FC<ParaListProps> = ({ onBack }) => {
             </div>
 
             <button
-              onClick={() => handleParaClick(selectedPara)}
+              onClick={() => setStartReading(true)}
               className="w-full mt-6 bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
             >
               <FiBookOpen size={18} />

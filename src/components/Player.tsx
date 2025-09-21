@@ -337,7 +337,7 @@ const QuranApp = () => {
   );
 
   return (
-    <div className="flex h-screen mx-auto w-full max-w-md flex-col bg-white">
+    <div className="flex h-screen mx-auto w-full max-w-lg flex-col bg-white">
       <div className="bg-emerald-500 text-white p-4 shadow-lg">
         <h1 className="text-xl font-bold text-center">{appName}</h1>
       </div>
