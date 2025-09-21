@@ -1,3 +1,4 @@
+// Enhanced QuranPageReader Component
 import React, { useState, useEffect } from "react";
 import {
   FiArrowLeft,
@@ -29,14 +30,18 @@ interface QuranItem {
 }
 
 interface QuranPageReaderProps {
-  selectedPara: Para | null;
-  setSelectedPara: (para: Para | null) => void;
+  selectedPara?: Para | null;
+  setSelectedPara?: (para: Para | null) => void;
+  selectedPageNumber?: number | null;
+  setSelectedPageNumber?: (page: number | null) => void;
   onBack: () => void;
 }
 
 const QuranPageReader: React.FC<QuranPageReaderProps> = ({
   selectedPara,
   setSelectedPara,
+  selectedPageNumber,
+  setSelectedPageNumber,
   onBack,
 }) => {
   const [isReading, setIsReading] = useState<boolean>(false);
@@ -47,31 +52,84 @@ const QuranPageReader: React.FC<QuranPageReaderProps> = ({
   const [imageLoadError, setImageLoadError] = useState<boolean>(false);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const [currentPara, setCurrentPara] = useState<Para | null>(null);
 
   const minSwipeDistance = 50;
 
+  // Function to find para by page number
+  const findParaByPageNumber = (
+    pageNumber: number
+  ): { para: Para | null; quranItem: QuranItem | null; pageIndex: number } => {
+    for (const item of quran as QuranItem[]) {
+      const pageIndex = item.pages.findIndex(
+        (page: Page) => page.page === pageNumber
+      );
+      if (pageIndex !== -1) {
+        // Find the corresponding para info (you might need to create a mapping)
+        const paraInfo: Para = {
+          number: item.para,
+          name: `Para ${item.para}`, // You might want to add actual names
+          arabicName: `الجزء ${item.para}`,
+          startingSurah: "Varies", // You might want to calculate this
+          endingSurah: "Varies", // You might want to calculate this
+          totalPages: item.pages.length,
+        };
+        return { para: paraInfo, quranItem: item, pageIndex };
+      }
+    }
+    return { para: null, quranItem: null, pageIndex: 0 };
+  };
+
+  // Handle direct page navigation
+  useEffect(() => {
+    if (selectedPageNumber && !selectedPara) {
+      const result = findParaByPageNumber(selectedPageNumber);
+      if (result.para && result.quranItem) {
+        setCurrentPara(result.para);
+        setCurrentQuranItem(result.quranItem);
+        setCurrentPageIndex(result.pageIndex);
+        setIsReading(true);
+        setImageLoadError(false);
+      }
+    }
+  }, [selectedPageNumber, selectedPara]);
+
   const handleParaClick = (para: Para): void => {
-    const quranItem = quran.filter(
+    const quranItem = quran.find(
       (item: QuranItem) => item.para === para.number
-    )[0];
-    setCurrentQuranItem(quranItem);
-    setCurrentPageIndex(0);
-    setIsReading(true);
-    setImageLoadError(false);
+    );
+    if (quranItem) {
+      setCurrentQuranItem(quranItem);
+      setCurrentPara(para);
+      setCurrentPageIndex(0);
+      setIsReading(true);
+      setImageLoadError(false);
+    }
   };
 
   const handleBackToParaInfo = (): void => {
     setIsReading(false);
     setCurrentQuranItem(null);
+    setCurrentPara(null);
     setCurrentPageIndex(0);
     setImageLoadError(false);
+    if (setSelectedPageNumber) {
+      setSelectedPageNumber(null);
+    }
   };
 
-  const handleBackToParaList = (): void => {
-    setSelectedPara(null);
+  const handleBackToMain = (): void => {
+    if (setSelectedPara) {
+      setSelectedPara(null);
+    }
+    if (setSelectedPageNumber) {
+      setSelectedPageNumber(null);
+    }
     setIsReading(false);
     setCurrentQuranItem(null);
+    setCurrentPara(null);
     setCurrentPageIndex(0);
+    onBack();
   };
 
   const goToNextPage = (): void => {
@@ -79,15 +137,88 @@ const QuranPageReader: React.FC<QuranPageReaderProps> = ({
       currentQuranItem &&
       currentPageIndex < currentQuranItem.pages.length - 1
     ) {
-      setCurrentPageIndex(currentPageIndex + 1);
+      const newIndex = currentPageIndex + 1;
+      setCurrentPageIndex(newIndex);
       setImageLoadError(false);
+
+      // Update selectedPageNumber if navigating by page
+      if (selectedPageNumber) {
+        if (setSelectedPageNumber) {
+          setSelectedPageNumber(currentQuranItem.pages[newIndex].page);
+        }
+      }
+    } else if (
+      currentQuranItem &&
+      currentPageIndex === currentQuranItem.pages.length - 1
+    ) {
+      // Try to go to next para
+      const nextParaItem = quran.find(
+        (item: QuranItem) => item.para === currentQuranItem.para + 1
+      );
+      if (nextParaItem) {
+        setCurrentQuranItem(nextParaItem);
+        setCurrentPageIndex(0);
+        setImageLoadError(false);
+
+        const newParaInfo: Para = {
+          number: nextParaItem.para,
+          name: `Para ${nextParaItem.para}`,
+          arabicName: `الجزء ${nextParaItem.para}`,
+          startingSurah: "Varies",
+          endingSurah: "Varies",
+          totalPages: nextParaItem.pages.length,
+        };
+        setCurrentPara(newParaInfo);
+
+        if (selectedPageNumber) {
+          if (setSelectedPageNumber) {
+            setSelectedPageNumber(nextParaItem.pages[0].page);
+          }
+        }
+      }
     }
   };
 
   const goToPreviousPage = (): void => {
     if (currentPageIndex > 0) {
-      setCurrentPageIndex(currentPageIndex - 1);
+      const newIndex = currentPageIndex - 1;
+      setCurrentPageIndex(newIndex);
       setImageLoadError(false);
+
+      // Update selectedPageNumber if navigating by page
+      if (selectedPageNumber && currentQuranItem) {
+        if (setSelectedPageNumber) {
+          setSelectedPageNumber(currentQuranItem.pages[newIndex].page);
+        }
+      }
+    } else if (currentQuranItem && currentQuranItem.para > 1) {
+      // Try to go to previous para
+      const prevParaItem = quran.find(
+        (item: QuranItem) => item.para === currentQuranItem.para - 1
+      );
+      if (prevParaItem) {
+        setCurrentQuranItem(prevParaItem);
+        setCurrentPageIndex(prevParaItem.pages.length - 1);
+        setImageLoadError(false);
+
+        const newParaInfo: Para = {
+          number: prevParaItem.para,
+          name: `Para ${prevParaItem.para}`,
+          arabicName: `الجزء ${prevParaItem.para}`,
+          startingSurah: "Varies",
+          endingSurah: "Varies",
+          totalPages: prevParaItem.pages.length,
+        };
+        setCurrentPara(newParaInfo);
+
+        if (selectedPageNumber) {
+          if (setSelectedPageNumber) {
+            setSelectedPageNumber(
+              prevParaItem.pages[prevParaItem.pages.length - 1].page
+            );
+          }
+        }
+      }
     }
   };
 
@@ -137,10 +268,18 @@ const QuranPageReader: React.FC<QuranPageReaderProps> = ({
   };
 
   // Reading mode
-  if (selectedPara && isReading && currentQuranItem) {
+  if (
+    (selectedPara || selectedPageNumber) &&
+    isReading &&
+    currentQuranItem &&
+    currentPara
+  ) {
     const currentPage = currentQuranItem.pages[currentPageIndex];
-    const isFirstPage = currentPageIndex === 0;
-    const isLastPage = currentPageIndex === currentQuranItem.pages.length - 1;
+    const isFirstPage = currentPageIndex === 0 && currentQuranItem.para === 1;
+    const isLastPage =
+      currentPageIndex === currentQuranItem.pages.length - 1 &&
+      currentQuranItem.para ===
+        Math.max(...quran.map((item: QuranItem) => item.para));
 
     return (
       <div className="flex-1 flex flex-col bg-gray-900">
@@ -156,9 +295,15 @@ const QuranPageReader: React.FC<QuranPageReaderProps> = ({
               </button>
               <div>
                 <h2 className="text-lg font-bold">
-                  Para {selectedPara.number}
+                  {selectedPageNumber
+                    ? `Page ${currentPage.page}`
+                    : `Para ${currentPara.number}`}
                 </h2>
-                <p className="text-sm opacity-90">{selectedPara.name}</p>
+                <p className="text-sm opacity-90">
+                  {selectedPageNumber
+                    ? `Para ${currentPara.number}`
+                    : currentPara.name}
+                </p>
               </div>
             </div>
             <div className="text-right">
@@ -173,7 +318,7 @@ const QuranPageReader: React.FC<QuranPageReaderProps> = ({
         </div>
 
         {/* Page Content */}
-        <div className="flex-1 flex items-center justify-center bg-gray-50 relative">
+        <div className="flex-1 flex items-center justify-center bg-gray-100 relative">
           <div
             className="relative max-w-2xl w-full h-full flex items-center justify-center px-4"
             onTouchStart={onTouchStart}
@@ -279,13 +424,14 @@ const QuranPageReader: React.FC<QuranPageReaderProps> = ({
     );
   }
 
-  if (selectedPara) {
+  // Para info mode
+  if (selectedPara && !selectedPageNumber) {
     return (
       <div className="flex-1 flex flex-col">
         <div className="p-4 bg-emerald-500 text-white">
           <div className="flex items-center gap-3">
             <button
-              onClick={handleBackToParaList}
+              onClick={handleBackToMain}
               className="text-white hover:bg-emerald-600 p-1 rounded"
             >
               <FiArrowLeft size={20} />
@@ -344,7 +490,7 @@ const QuranPageReader: React.FC<QuranPageReaderProps> = ({
     <div className="flex-1 flex items-center justify-center bg-gray-50">
       <div className="text-center text-gray-500">
         <FiBookOpen size={48} className="mx-auto mb-4" />
-        <p>Select a Para to begin reading</p>
+        <p>Select a Para or Page to begin reading</p>
       </div>
     </div>
   );

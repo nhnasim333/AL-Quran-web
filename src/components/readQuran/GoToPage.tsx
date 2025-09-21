@@ -1,14 +1,18 @@
+// Enhanced GoToPage Component
 import React, { useState } from "react";
 import { FiArrowLeft, FiBookOpen, FiSearch } from "react-icons/fi";
 import { BiBook } from "react-icons/bi";
+import QuranPageReader from "./QuranPageRender";
 
 interface GoToPageProps {
   onBack: () => void;
+  // onPageSelect: (pageNumber: number) => void;
 }
 
 const GoToPage: React.FC<GoToPageProps> = ({ onBack }) => {
   const [pageNumber, setPageNumber] = useState("");
   const [selectedPage, setSelectedPage] = useState<number | null>(null);
+  const [startReading, setStartReading] = useState(false);
 
   // Total pages in the Quran (Mushaf)
   const TOTAL_PAGES = 611;
@@ -28,13 +32,11 @@ const GoToPage: React.FC<GoToPageProps> = ({ onBack }) => {
     const page = parseInt(pageNumber);
     if (page >= 1 && page <= TOTAL_PAGES) {
       setSelectedPage(page);
-      console.log(`Navigate to Page ${page}`);
     }
   };
 
   const handleQuickPage = (page: number) => {
     setSelectedPage(page);
-    console.log(`Navigate to Page ${page}`);
   };
 
   // Quick access pages (common bookmarks)
@@ -153,6 +155,16 @@ const GoToPage: React.FC<GoToPageProps> = ({ onBack }) => {
     { page: 604, description: "An-Nas" },
   ];
 
+  if (startReading && selectedPage) {
+    return (
+      <QuranPageReader
+        selectedPageNumber={selectedPage}
+        setSelectedPageNumber={setSelectedPage}
+        onBack={onBack}
+      />
+    );
+  }
+
   if (selectedPage) {
     return (
       <div className="flex-1 flex flex-col">
@@ -173,7 +185,7 @@ const GoToPage: React.FC<GoToPageProps> = ({ onBack }) => {
 
         <div className="flex-1 p-4 bg-gray-50">
           <div className="bg-white rounded-lg p-6 shadow-sm text-center">
-            <div className="text-6xl text-emerald-500 mb-4">
+            <div className="text-6xl text-emerald-500 mb-4 flex justify-center">
               <BiBook />
             </div>
             <h3 className="text-2xl font-bold text-gray-800 mb-2">
@@ -182,7 +194,7 @@ const GoToPage: React.FC<GoToPageProps> = ({ onBack }) => {
             <p className="text-gray-600 mb-6">Ready to read the Quran</p>
 
             <button
-              onClick={() => console.log(`Start reading page ${selectedPage}`)}
+              onClick={() => setStartReading(true)}
               className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
             >
               <FiBookOpen size={18} />
