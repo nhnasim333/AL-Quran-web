@@ -12,18 +12,6 @@ A Progressive Web App (PWA) for Quran memorization practice, built with React, V
 - 🎨 Clean, responsive UI with Tailwind CSS
 - ⚡ Fast development and build with Vite
 
-## Todo
-
-- [x] Cache previously loaded Surahs
-- [x] Update web app when it updates
-- [x] Show icons on what is downloaded/cached
-- [~] FIX: On initial load shows the first ayat
-  - The problem is in Brave, not in Chrome.
-- [ ] FIX: The audio stops on the next ayat
-  - Could not replicate. Maybe the problem is in Brave only
-- [ ] FIX: Click on 'Play' does not Play and have to click 'play' button on player to play
-  - Could not replicate. Maybe the problem is in Brave only
-
 ## 🚀 Development
 
 All commands are run from the root of the project, from a terminal:
