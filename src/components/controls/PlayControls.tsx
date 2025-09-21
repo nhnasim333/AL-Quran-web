@@ -3,8 +3,6 @@ import AyatRangeSelector from "./AyatRangeSelector";
 import QariSelector from "./QariSelector";
 import SurahSelector from "./SurahSelector";
 import type { QariKey } from "./qari";
-// import { quran } from "../../../_scripts/downloadImages";
-import { quran } from "../../../_scripts/downloadImages";
 
 interface PlayerControlsProps {
   qariKey: QariKey;
@@ -25,8 +23,6 @@ export const PlayControls: React.FC<PlayerControlsProps> = ({
   setAyatRange,
   surah,
 }) => {
-  console.log("Rendering PlayControls", quran);
-  // console.log("Rendering PlayControls", imageUrls);
   return (
     <>
       <QariSelector qariKey={qariKey} setQariKey={setQariKey} />

@@ -19,7 +19,7 @@ const paras: Para[] = [
     arabicName: "الم",
     startingSurah: "Al-Fatiha",
     endingSurah: "Al-Baqarah",
-    totalPages: 21,
+    totalPages: 22,
   },
   {
     number: 2,
@@ -27,7 +27,7 @@ const paras: Para[] = [
     arabicName: "سيقول",
     startingSurah: "Al-Baqarah",
     endingSurah: "Al-Baqarah",
-    totalPages: 21,
+    totalPages: 20,
   },
   {
     number: 3,
@@ -251,7 +251,7 @@ const paras: Para[] = [
     arabicName: "عم يتساءلون",
     startingSurah: "An-Naba",
     endingSurah: "An-Nas",
-    totalPages: 22,
+    totalPages: 24,
   },
 ];
 
