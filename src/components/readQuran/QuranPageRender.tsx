@@ -318,7 +318,7 @@ const QuranPageReader: React.FC<QuranPageReaderProps> = ({
         </div>
 
         {/* Page Content */}
-        <div className="flex-1 flex items-center justify-center bg-gray-100 relative">
+        <div className="flex-1 flex items-center justify-center bg-gray-50 relative">
           <div
             className="relative max-w-2xl w-full h-full flex items-center justify-center px-4"
             onTouchStart={onTouchStart}
